@@ -1,9 +1,12 @@
+// Package intervals provides types and methods for working with closed ranges [a, b], where a and b can be any type that supports the <, >, and = operations.
 package intervals
 
+// Relation represents the relationship between interval x and interval y
 type Relation int
 
 const (
-	_ = iota
+	// Added for exhaustiveness. Should never happen
+	NoRel = iota
 
 	/*
 	   +---+
@@ -137,74 +140,85 @@ const (
 	After
 )
 
-// Interval represents a range (i.e. [x,y])
-type interval[T any] struct {
-	x       T              // low endpoint
-	y       T              // high endpoint
-	compare func(T, T) int // a comparison function returns 1 if the first argument is bigger than the second one; 0 if they are equal; -1 otherwise
+// An Interval represents a closed range [a,b] of an arbitrary type T
+type Interval[C Comparator[T], T any] struct {
+	a T // low endpoint
+	b T // high endpoint
 }
 
-// Returns the low endpoint of the interval
-func (i interval[T]) LowEndpoint() T {
-	return i.x
+// New creates a new Interval of type T
+// If a > b, then elements of the interval are swapped
+func New[C Comparator[T], T any](a, b T) Interval[C, T] {
+	var c C
+	cmpFunc := c.Compare
+
+	if cmpFunc(a, b) == 1 {
+		return Interval[C, T]{b, a}
+	}
+
+	return Interval[C, T]{a, b}
 }
 
-// Returns the high endpoint of the interval
-func (i interval[T]) HighEndpoint() T {
-	return i.y
+// LowEndpoint returns the low endpoint of the current interval (i.e. a from [a,b])
+func (i Interval[C, T]) LowEndpoint() T {
+	return i.a
 }
 
-func (i interval[T]) Relate(other interval[T]) Relation {
-	xx := i.compare(i.x, other.x)
-	yy := i.compare(i.y, other.y)
-	yx := i.compare(i.y, other.x)
-	xy := i.compare(i.x, other.y)
+// HighEndpoint returns the high endpoint of the current interval (i.e. b from [a,b])
+func (i Interval[C, T]) HighEndpoint() T {
+	return i.b
+}
+
+// Relate returns the relationship between two intervals of type T
+func (i Interval[C, T]) Relate(other Interval[C, T]) Relation {
+	var c C
+	cmpFunc := c.Compare
+
+	aa := cmpFunc(i.a, other.a)
+	bb := cmpFunc(i.b, other.b)
+	ba := cmpFunc(i.b, other.a)
+	ab := cmpFunc(i.a, other.b)
 
 	switch {
-	case yx == -1:
+	case ba == -1:
 		return Before
-	case xx == -1 && yx == 0 && yy == -1:
+	case aa == -1 && ba == 0 && bb == -1:
 		return Meets
-	case yx == 0: // special case for zero intervals (i.e. (5,5))
+	case ba == 0: // special case for zero intervals (i.e. (5,5))
 		return Overlaps
-	case xx == 1 && xy == 0 && yy == 1:
+	case aa == 1 && ab == 0 && bb == 1:
 		return MetBy
-	case xy == 0: // special case for zero intervals (i.e. (5,5))
+	case ab == 0: // special case for zero intervals (i.e. (5,5))
 		return OverlappedBy
-	case xy == 1:
+	case ab == 1:
 		return After
-	case xx == -1 && yy == -1:
+	case aa == -1 && bb == -1:
 		return Overlaps
-	case xx == -1 && yy == 0:
+	case aa == -1 && bb == 0:
 		return FinishedBy
-	case xx == -1 && yy == 1:
+	case aa == -1 && bb == 1:
 		return Contains
-	case xx == 0 && yy == -1:
+	case aa == 0 && bb == -1:
 		return Starts
-	case xx == 0 && yy == 0:
+	case aa == 0 && bb == 0:
 		return Equal
-	case xx == 0 && yy == 1:
+	case aa == 0 && bb == 1:
 		return StartedBy
-	case xx == 1 && yy == -1:
+	case aa == 1 && bb == -1:
 		return During
-	case xx == 1 && yy == 0:
+	case aa == 1 && bb == 0:
 		return Finishes
-	case xx == 1 && yy == 1:
+	case aa == 1 && bb == 1:
 		return OverlappedBy
 	default:
-		return 0
+		return NoRel
 	}
 }
 
-// Check if the interval is empty (e.g. (5,5))
-func (i interval[T]) IsEmpty() bool {
-	return i.compare(i.x, i.y) == 0
-}
+// IsEmpty reports whether the interval is empty
+func (i Interval[C, T]) IsEmpty() bool {
+	var c C
+	cmpFunc := c.Compare
 
-func New[T any](x T, y T, cmpFunc func(T, T) int) interval[T] {
-	if cmpFunc(x, y) == 1 {
-		return interval[T]{y, x, cmpFunc}
-	}
-
-	return interval[T]{x, y, cmpFunc}
+	return cmpFunc(i.a, i.b) == 0
 }
