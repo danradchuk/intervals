@@ -11,59 +11,59 @@ type intervalWithMax[C Comparator[T], T any] struct {
 
 func TestIntervalTreeInsert(t *testing.T) {
 	intervalsSorted := []intervalWithMax[IntComparator, int]{
-		intervalWithMax[IntComparator, int]{
-			i:   Interval[IntComparator, int]{0, 3},
+		{
+			i:   New[IntComparator, int](0, 3),
 			max: 3,
 		},
-		intervalWithMax[IntComparator, int]{
-			i:   Interval[IntComparator, int]{5, 8},
+		{
+			i:   New[IntComparator, int](5, 8),
 			max: 10,
 		},
-		intervalWithMax[IntComparator, int]{
-			i:   Interval[IntComparator, int]{6, 10},
+		{
+			i:   New[IntComparator, int](6, 10),
 			max: 10,
 		},
-		intervalWithMax[IntComparator, int]{
-			i:   Interval[IntComparator, int]{8, 9},
+		{
+			i:   New[IntComparator, int](8, 9),
 			max: 23,
 		},
-		intervalWithMax[IntComparator, int]{
-			i:   Interval[IntComparator, int]{15, 23},
+		{
+			i:   New[IntComparator, int](15, 23),
 			max: 23,
 		},
-		intervalWithMax[IntComparator, int]{
-			i:   Interval[IntComparator, int]{16, 21},
+		{
+			i:   New[IntComparator, int](16, 21),
 			max: 30,
 		},
-		intervalWithMax[IntComparator, int]{
-			i:   Interval[IntComparator, int]{17, 19},
+		{
+			i:   New[IntComparator, int](17, 19),
 			max: 20,
 		},
-		intervalWithMax[IntComparator, int]{
-			i:   Interval[IntComparator, int]{19, 20},
+		{
+			i:   New[IntComparator, int](19, 20),
 			max: 20,
 		},
-		intervalWithMax[IntComparator, int]{
-			i:   Interval[IntComparator, int]{25, 30},
+		{
+			i:   New[IntComparator, int](25, 30),
 			max: 30,
 		},
-		intervalWithMax[IntComparator, int]{
-			i:   Interval[IntComparator, int]{26, 26},
+		{
+			i:   New[IntComparator, int](26, 26),
 			max: 26,
 		},
 	}
 
-	tree := NewIntervalTree[IntComparator, int](Interval[IntComparator, int]{16, 21})
+	tree := NewIntervalTree[IntComparator, int](New[IntComparator, int](16, 21))
 
-	tree.Insert(Interval[IntComparator, int]{8, 9})
-	tree.Insert(Interval[IntComparator, int]{25, 30})
-	tree.Insert(Interval[IntComparator, int]{5, 8})
-	tree.Insert(Interval[IntComparator, int]{15, 23})
-	tree.Insert(Interval[IntComparator, int]{17, 19})
-	tree.Insert(Interval[IntComparator, int]{0, 3})
-	tree.Insert(Interval[IntComparator, int]{6, 10})
-	tree.Insert(Interval[IntComparator, int]{19, 20})
-	tree.Insert(Interval[IntComparator, int]{26, 26})
+	tree.Insert(New[IntComparator](8, 9))
+	tree.Insert(New[IntComparator](25, 30))
+	tree.Insert(New[IntComparator](5, 8))
+	tree.Insert(New[IntComparator](15, 23))
+	tree.Insert(New[IntComparator](17, 19))
+	tree.Insert(New[IntComparator](0, 3))
+	tree.Insert(New[IntComparator](6, 10))
+	tree.Insert(New[IntComparator](19, 20))
+	tree.Insert(New[IntComparator](26, 26))
 
 	res := make([]intervalWithMax[IntComparator, int], 0)
 	accumFunc := func(acc *[]intervalWithMax[IntComparator, int], i intervalWithMax[IntComparator, int]) {
@@ -107,19 +107,19 @@ func TestSearchOverlaps(t *testing.T) {
 		{8, 9},
 	}
 
-	tree := NewIntervalTree[IntComparator, int](Interval[IntComparator, int]{16, 21})
+	tree := NewIntervalTree[IntComparator, int](New[IntComparator, int](16, 21))
 
-	tree.Insert(Interval[IntComparator, int]{8, 9})
-	tree.Insert(Interval[IntComparator, int]{25, 30})
-	tree.Insert(Interval[IntComparator, int]{5, 8})
-	tree.Insert(Interval[IntComparator, int]{15, 23})
-	tree.Insert(Interval[IntComparator, int]{17, 19})
-	tree.Insert(Interval[IntComparator, int]{0, 3})
-	tree.Insert(Interval[IntComparator, int]{6, 10})
-	tree.Insert(Interval[IntComparator, int]{19, 20})
-	tree.Insert(Interval[IntComparator, int]{26, 26})
+	tree.Insert(New[IntComparator, int](8, 9))
+	tree.Insert(New[IntComparator, int](25, 30))
+	tree.Insert(New[IntComparator, int](5, 8))
+	tree.Insert(New[IntComparator, int](15, 23))
+	tree.Insert(New[IntComparator, int](17, 19))
+	tree.Insert(New[IntComparator, int](0, 3))
+	tree.Insert(New[IntComparator, int](6, 10))
+	tree.Insert(New[IntComparator, int](19, 20))
+	tree.Insert(New[IntComparator, int](26, 26))
 
-	s := tree.SearchOverlaps(Interval[IntComparator, int]{4, 15})
+	s := tree.SearchOverlaps(New[IntComparator, int](4, 15))
 
 	for i, v := range s {
 		if overlappedIntervals[i].a != v.a {
