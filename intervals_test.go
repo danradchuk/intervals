@@ -51,7 +51,7 @@ func TestIntervalCreation(t *testing.T) {
 	d2 := time.Now()
 
 	// Interval[time.Time] [time.Now() - 1 Day, time.Now()]
-	t5 := New[DateTimeComparator, time.Time](d1, d2)
+	t5 := New[TimeComparator, time.Time](d1, d2)
 	if !t5.a.Equal(d1) {
 		t.Errorf("expected time.Now() - 1 Day, got %v", t5.a)
 	}
@@ -60,7 +60,7 @@ func TestIntervalCreation(t *testing.T) {
 	}
 
 	// Interval[time.Time] [time.Now(), time.Now() - 1 Day]
-	t6 := New[DateTimeComparator, time.Time](d2, d1)
+	t6 := New[TimeComparator, time.Time](d2, d1)
 	if !t6.a.Equal(d1) {
 		t.Errorf("expected time.Now() - 1 Day, got %v", t6.a)
 	}
